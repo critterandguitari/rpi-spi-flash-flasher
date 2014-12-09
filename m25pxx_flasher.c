@@ -135,6 +135,7 @@ int main(int argc, char *argv[])
     puts("erased.");
 
 
+
     //for (i = 0; i < 100; i++) {
   /*  for(i=0; i<1000; i++){
         spi_tx[0] = 0x03;
