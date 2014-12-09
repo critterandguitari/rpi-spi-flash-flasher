@@ -69,10 +69,12 @@ int main(int argc, char *argv[])
 
     uint8_t spi_tx[256];
     uint8_t spi_rx[256];
+    uint8_t f_buf[256];
+    uint32_t addr = 0;
 
     FILE *soundfile;
 
-    soundfile = fopen("t.raw", "rb");
+    soundfile = fopen("../obit.wav", "rb");
 
 
     fd = open(device, O_RDWR);
@@ -122,6 +124,7 @@ int main(int argc, char *argv[])
     for (i =0; i<256; i++) {
         spi_tx[i] = 0;
         spi_rx[i] = 0;
+        f_buf[i] = 0;
     }
 
     // command and address
@@ -129,29 +132,38 @@ int main(int argc, char *argv[])
  //   spi_tx[1] = 0x00;
  //   spi_tx[2] = 0x00;
   //  spi_tx[3] = 0x00;
-    /*
     puts("erasing flash...");
     spi_tx[0] = 0x06;  //wren
     transfer(fd, spi_tx, spi_rx, 1);
     spi_tx[0] = 0xc7;  // bulk erase
     transfer(fd, spi_tx, spi_rx, 1);
-    sleep(5);  // wait for it
+    sleep(45);  // wait for it
     puts("erased.");
-*/
+
 
 // write some stuff
-    for (i =0; i<256; i++) 
-        spi_tx[i] = 'o';
+    addr = 0;
+    while (fread(f_buf, 128, 1, soundfile)){
+        //printf("%x", f_buf[0]);
+ 
+        
+        spi_tx[0] = 0x06;  //wren
+        transfer(fd, spi_tx, spi_rx, 1);
 
-    spi_tx[0] = 0x06;  //wren
-    transfer(fd, spi_tx, spi_rx, 1);
+        spi_tx[0] = 0x02; // write
+        spi_tx[1] = addr >> 16;
+        spi_tx[2] = addr >> 8;
+        spi_tx[3] = addr;
 
-    spi_tx[0] = 0x02; // write
-    spi_tx[1] = 0;
-    spi_tx[2] = 0;
-    spi_tx[3] = 0;
-    transfer(fd, spi_tx, spi_rx, 128);
+        for (i=4; i<132; i++)
+            spi_tx[i] = f_buf[i - 4];
+        
+        transfer(fd, spi_tx, spi_rx, 132);
 
+        addr += 128;
+        puts("wrote 128");
+       
+    }
     
 
 
