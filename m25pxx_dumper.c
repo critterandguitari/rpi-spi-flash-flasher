@@ -53,10 +53,8 @@ static void transfer(int fd, uint8_t * tx, uint8_t * rx, uint8_t len)
         pabort("can't send spi message");
 
     for (ret = 0; ret < len; ret++) {
-        if (!(ret % 6))
-            puts("");
         if (ret > 3)
-            printf("%.2X ", rx[ret]);
+            printf("%c", rx[ret]);
     }
     puts("");
 }
@@ -131,15 +129,15 @@ int main(int argc, char *argv[])
   //  spi_tx[3] = 0x00;
 
     //for (i = 0; i < 100; i++) {
-    for(i=0; i<1; i++){
+    //for(i=0; i<1; i++){
         spi_tx[0] = 0x03;
-        spi_tx[1] = i>>16;
-        spi_tx[2] = i>>8;
-        spi_tx[3] = i;
+        spi_tx[1] = 0;//i>>16;
+        spi_tx[2] = 0;//i>>8;
+        spi_tx[3] = 0;//i;
 
        transfer(fd, spi_tx, spi_rx, 128);
-        fwrite(spi_rx, 128, 1, write_ptr);
-    }
+        //fwrite(spi_rx, 128, 1, write_ptr);
+    //}
     fclose(write_ptr);
     //}
 

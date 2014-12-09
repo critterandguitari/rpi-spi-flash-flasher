@@ -129,11 +129,30 @@ int main(int argc, char *argv[])
  //   spi_tx[1] = 0x00;
  //   spi_tx[2] = 0x00;
   //  spi_tx[3] = 0x00;
-    
+    /*
     puts("erasing flash...");
-    sleep(5);
+    spi_tx[0] = 0x06;  //wren
+    transfer(fd, spi_tx, spi_rx, 1);
+    spi_tx[0] = 0xc7;  // bulk erase
+    transfer(fd, spi_tx, spi_rx, 1);
+    sleep(5);  // wait for it
     puts("erased.");
+*/
 
+// write some stuff
+    for (i =0; i<256; i++) 
+        spi_tx[i] = 'o';
+
+    spi_tx[0] = 0x06;  //wren
+    transfer(fd, spi_tx, spi_rx, 1);
+
+    spi_tx[0] = 0x02; // write
+    spi_tx[1] = 0;
+    spi_tx[2] = 0;
+    spi_tx[3] = 0;
+    transfer(fd, spi_tx, spi_rx, 128);
+
+    
 
 
     //for (i = 0; i < 100; i++) {
